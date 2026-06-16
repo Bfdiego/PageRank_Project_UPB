@@ -179,7 +179,10 @@ def _canonicalize_url(base_url: str, href: str, ignore_query: bool) -> Optional[
     host = (parsed.hostname or "").lower()
     if not host:
         return None
-    port = parsed.port
+    try:
+        port = parsed.port
+    except ValueError:
+        return None
     if (scheme == "http" and port == 80) or (scheme == "https" and port == 443):
         port = None
     netloc = f"{host}:{port}" if port else host
