@@ -69,16 +69,16 @@ API endpoints:
 | POST | `/api/crawl/start` | returns `jobId` |
 | POST | `/api/crawl/stop` | sets stop flag |
 | GET | `/api/crawl/status` | progress/state |
-| GET | `/api/crawl/result` | nodes, edges, danglingNodes |
+| GET | `/api/crawl/result` | nodes, edges, danglingNodes, titles, stats |
 
 ### Frontend (`frontend/src/`)
 
 - **`lib/api.ts`**: typed fetch wrappers for all backend endpoints. `API_BASE` comes from `NEXT_PUBLIC_API_BASE` env var (falls back to `http://localhost:8000`).
 - **`app/page.tsx`**: single-page app holding all state. Key responsibilities:
   - Polls `/api/crawl/status` every 600 ms while a job is running.
-  - Implements `pageRank()` — iterative random-surfer algorithm (Ian Rogers' formula) using `Float64Array`. Dangling nodes distribute mass uniformly ("Option A").
+  - Calls `pageRank()` (implemented in `lib/pagerank.ts`) — iterative random-surfer algorithm (Ian Rogers' formula) using `Float64Array`. Dangling nodes distribute mass uniformly ("Option A").
   - Builds Cytoscape.js graph via `rebuildCytoscape()` (dynamically imported). Two modes: **overview** (top-K by score, BFS layout) and **focus** (1-hop ego graph around selected node).
-  - Persists settings + graph + scores to `localStorage` under key `pagerank-project.snapshot.v1`.
+  - Persists settings + graph + scores to `localStorage` under key `pagerank-project.snapshot.v2`.
 - **`components/CrawlForm.tsx`**: URL input + Crawl/Stop buttons.
 - **`components/SettingsPanel.tsx`**: maxPages, maxDepth, ignoreQueryParams controls.
 - **`components/CrawlStatus.tsx`**: displays live job state/progress.
@@ -92,7 +92,7 @@ User → CrawlForm → startCrawl() → POST /api/crawl/start
          ↓
        [crawl done] → handleLoadGraph() → GET /api/crawl/result → setGraph()
          ↓
-       handleRunPageRank() → pageRank() (client-side) → setScores()
+       handleRunPageRank() → pageRank() (lib/pagerank.ts, client-side) → setScores()
          ↓
        Cytoscape.js visualization + ranking table
 ```
