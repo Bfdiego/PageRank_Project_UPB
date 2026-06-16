@@ -1258,7 +1258,15 @@ export default function HomePage() {
 
   return (
     <main style={{ padding: 24, maxWidth: 980, margin: "0 auto" }}>
-      <h1 style={{ marginTop: 0 }}>PageRank Project - Interfaz de crawl</h1>
+      <header style={{ marginBottom: 16 }}>
+        <h1 style={{ marginTop: 0, marginBottom: 4 }}>
+          PageRank Project - Interfaz de crawl
+        </h1>
+        <p className="muted" style={{ margin: 0, fontSize: 13 }}>
+          Rastrea un sitio, construye el grafo de enlaces y calcula PageRank
+          en el navegador.
+        </p>
+      </header>
 
       {!mounted ? (
         <div style={{ marginTop: 12, opacity: 0.75 }}>Cargando...</div>
@@ -1290,7 +1298,7 @@ export default function HomePage() {
           <div
             style={{
               marginTop: 12,
-              border: "1px solid #ddd",
+              border: "1px solid var(--border)",
               borderRadius: 8,
               padding: 12,
             }}
@@ -1396,7 +1404,7 @@ export default function HomePage() {
                 {/* Left: ranking list */}
                 <div
                   style={{
-                    border: "1px solid #eee",
+                    border: "1px solid var(--border)",
                     borderRadius: 8,
                     padding: 10,
                   }}
@@ -1458,7 +1466,7 @@ export default function HomePage() {
                             textAlign: "left",
                             border: active
                               ? "1px solid #999"
-                              : "1px solid #eee",
+                              : "1px solid var(--border)",
                             borderRadius: 8,
                             padding: 10,
                             background: active ? "#fafafa" : "white",
@@ -1527,7 +1535,7 @@ export default function HomePage() {
                 {/* Right: details panel */}
                 <div
                   style={{
-                    border: "1px solid #eee",
+                    border: "1px solid var(--border)",
                     borderRadius: 8,
                     padding: 10,
                   }}
@@ -1679,7 +1687,7 @@ export default function HomePage() {
               <div
                 style={{
                   marginTop: 12,
-                  border: "1px solid #eee",
+                  border: "1px solid var(--border)",
                   borderRadius: 8,
                   padding: 10,
                 }}
@@ -1908,7 +1916,7 @@ export default function HomePage() {
                         <th
                           style={{
                             textAlign: "left",
-                            borderBottom: "1px solid #eee",
+                            borderBottom: "1px solid var(--border)",
                             padding: "6px 4px",
                           }}
                         >
@@ -1917,7 +1925,7 @@ export default function HomePage() {
                         <th
                           style={{
                             textAlign: "left",
-                            borderBottom: "1px solid #eee",
+                            borderBottom: "1px solid var(--border)",
                             padding: "6px 4px",
                           }}
                         >
@@ -1926,7 +1934,7 @@ export default function HomePage() {
                         <th
                           style={{
                             textAlign: "left",
-                            borderBottom: "1px solid #eee",
+                            borderBottom: "1px solid var(--border)",
                             padding: "6px 4px",
                           }}
                         >
@@ -1982,7 +1990,7 @@ export default function HomePage() {
               <div
                 style={{
                   marginTop: 12,
-                  border: "1px solid #eee",
+                  border: "1px solid var(--border)",
                   borderRadius: 8,
                   padding: 10,
                 }}
@@ -2078,7 +2086,7 @@ export default function HomePage() {
                     ref={cyContainerRef}
                     style={{
                       height: 520,
-                      border: "1px solid #ddd",
+                      border: "1px solid var(--border)",
                       borderRadius: 8,
                       overflow: "hidden",
                       background: "white",

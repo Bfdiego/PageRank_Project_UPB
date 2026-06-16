@@ -19,20 +19,23 @@ export default function CrawlStatusCard({ status, error }: Props) {
     : 0;
 
   return (
-    <div style={{ border: "1px solid #ddd", padding: 12, borderRadius: 8 }}>
+    <div className="card">
       <h3 style={{ margin: "0 0 8px" }}>Estado</h3>
 
-      {error ? <p style={{ margin: 0, color: "crimson" }}>{error}</p> : null}
+      {error ? <p style={{ margin: 0, color: "var(--danger)" }}>{error}</p> : null}
 
       {!status ? (
-        <p style={{ margin: 0, opacity: 0.75 }}>Sin job activo.</p>
+        <p className="muted" style={{ margin: 0 }}>Sin job activo.</p>
       ) : (
         <div style={{ display: "grid", gap: 6 }}>
           <div>
             <strong>jobId:</strong> {status.jobId}
           </div>
           <div>
-            <strong>estado:</strong> {STATE_LABELS[status.state]}
+            <strong>estado:</strong>{" "}
+            <span className={status.state === "error" ? "badge" : "pill"}>
+              {STATE_LABELS[status.state]}
+            </span>
           </div>
           <div>
             <strong>progreso:</strong> {status.visited}/{status.maxPages}
@@ -42,7 +45,7 @@ export default function CrawlStatusCard({ status, error }: Props) {
               width: "100%",
               height: 8,
               borderRadius: 4,
-              background: "#eee",
+              background: "var(--border)",
               overflow: "hidden",
             }}
           >
@@ -50,7 +53,7 @@ export default function CrawlStatusCard({ status, error }: Props) {
               style={{
                 width: `${progressPct}%`,
                 height: "100%",
-                background: status.state === "error" ? "crimson" : "#3b82f6",
+                background: status.state === "error" ? "var(--danger)" : "var(--primary)",
                 transition: "width 200ms ease",
               }}
             />
@@ -69,7 +72,7 @@ export default function CrawlStatusCard({ status, error }: Props) {
             <strong>tiempo:</strong> {status.elapsedSeconds}s
           </div>
           {status.error ? (
-            <div style={{ color: "crimson" }}>
+            <div style={{ color: "var(--danger)" }}>
               <strong>error:</strong> {status.error}
             </div>
           ) : null}

@@ -14,9 +14,9 @@ export default function CrawlForm({
   running,
 }: Props) {
   return (
-    <div style={{ border: "1px solid #ddd", padding: 12, borderRadius: 8 }}>
+    <div className="card">
       <h3 style={{ margin: "0 0 8px" }}>Crawl</h3>
-      <p style={{ margin: "0 0 10px", fontSize: 12, opacity: 0.7 }}>
+      <p className="muted" style={{ margin: "0 0 10px" }}>
         URL inicial desde donde se construirá el grafo de enlaces.
       </p>
 
@@ -32,7 +32,7 @@ export default function CrawlForm({
       </label>
 
       <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
-        <button onClick={onCrawl} disabled={running}>
+        <button className="btn-primary" onClick={onCrawl} disabled={running}>
           Iniciar crawl
         </button>
         <button onClick={onStop} disabled={!running}>

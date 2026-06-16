@@ -14,7 +14,7 @@ export default function SettingsPanel({
   disabled = false,
 }: Props) {
   return (
-    <div style={{ border: "1px solid #ddd", padding: 12, borderRadius: 8 }}>
+    <div className="card">
       <h3 style={{ margin: "0 0 8px" }}>Parámetros de crawl</h3>
 
       <div style={{ display: "grid", gap: 10 }}>
@@ -28,7 +28,7 @@ export default function SettingsPanel({
             disabled={disabled}
             onChange={(e) => setMaxPages(Number(e.target.value))}
           />
-          <span style={{ fontSize: 12, opacity: 0.7 }}>
+          <span className="muted">
             Limita cuántas páginas puede visitar el crawler.
           </span>
         </label>
@@ -43,7 +43,7 @@ export default function SettingsPanel({
             disabled={disabled}
             onChange={(e) => setMaxDepth(Number(e.target.value))}
           />
-          <span style={{ fontSize: 12, opacity: 0.7 }}>
+          <span className="muted">
             Define cuantos saltos de enlaces se siguen desde la URL inicial.
           </span>
         </label>
