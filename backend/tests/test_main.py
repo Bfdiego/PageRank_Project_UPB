@@ -134,6 +134,35 @@ class EndpointTests(unittest.TestCase):
             self.assertIn("https://example.com/", payload["nodes"])
             self.assertIn({"source": "https://example.com/", "target": "https://example.com/a"}, payload["edges"])
 
+    def test_cors_preflight_accepts_frontend_on_alternate_local_port(self):
+        client = TestClient(m.app)
+
+        response = client.options(
+            "/api/crawl/start",
+            headers={
+                "Origin": "http://localhost:3001",
+                "Access-Control-Request-Method": "POST",
+                "Access-Control-Request-Headers": "content-type",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.headers["access-control-allow-origin"], "http://localhost:3001")
+
+    def test_cors_preflight_rejects_non_local_unknown_origin(self):
+        client = TestClient(m.app)
+
+        response = client.options(
+            "/api/crawl/start",
+            headers={
+                "Origin": "https://untrusted.example",
+                "Access-Control-Request-Method": "POST",
+            },
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertNotIn("access-control-allow-origin", response.headers)
+
 
 if __name__ == "__main__":
     unittest.main()

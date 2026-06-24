@@ -353,7 +353,9 @@ app = FastAPI(title="PageRank Project Backend", version="0.1.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    # Next.js usa otro puerto cuando el 3000 ya está ocupado. Permitimos
+    # cualquier puerto únicamente para los hosts loopback de desarrollo.
+    allow_origin_regex=r"^https?://(?:localhost|127\.0\.0\.1|\[::1\])(?::\d+)?$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

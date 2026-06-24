@@ -150,7 +150,7 @@ La UI bloquea `Load Graph` mientras el crawl sigue en ejecucion para evitar leer
 - Los jobs viven en memoria. Si reinicias el backend, se pierden los `jobId` y resultados anteriores.
 - Si presionas `Stop`, el backend puede tardar hasta terminar la peticion HTTP actual antes de cambiar a `stopped`.
 - El crawler no sigue sitios locales o privados por el bloqueo de seguridad.
-- El backend permite CORS desde `http://localhost:3000` y `http://127.0.0.1:3000`. Si Next.js corre en otro puerto, ajusta el CORS en `backend/app/main.py`.
+- En desarrollo, el backend permite CORS desde `localhost`, `127.0.0.1` y `[::1]` en cualquier puerto; esto cubre el cambio automático de Next.js a `3001` cuando `3000` está ocupado.
 - El modo dev usa Turbopack (`npm run dev`). El build de produccion usa Webpack mediante `next build --webpack`.
 
 ## Endpoints principales
