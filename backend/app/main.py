@@ -8,7 +8,7 @@ import uuid
 from collections import deque
 from urllib.parse import urljoin, urlparse, urlunparse
 from dataclasses import dataclass, field
-from typing import Dict, Optional, Literal
+from typing import Optional, Literal
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -91,7 +91,7 @@ class Job:
     lock: threading.Lock = field(default_factory=threading.Lock)
 
 
-JOBS: Dict[str, Job] = {}
+JOBS: dict[str, Job] = {}
 
 _SKIP_SCHEMES = ("mailto:", "tel:", "javascript:")
 _SAFE_HOST_CACHE: dict[str, bool] = {}
@@ -161,8 +161,7 @@ def _canonicalize_url(base_url: str, href: str, ignore_query: bool) -> Optional[
     if not href:
         return None
 
-    lower = href.lower()
-    if lower.startswith(_SKIP_SCHEMES):
+    if href.lower().startswith(_SKIP_SCHEMES):
         return None
 
     if href.startswith("#"):
@@ -248,8 +247,6 @@ def _crawl_static_html(job: Job) -> None:
                 with job.lock:
                     job.current_url = url
                     job.queue_size = len(queue)
-
-                with job.lock:
                     if job.visited >= job.max_pages:
                         job.state = "done"
                         return
@@ -402,7 +399,7 @@ def stop_crawl(payload: CrawlStopRequest):
         raise HTTPException(status_code=404, detail="jobId not found")
 
     with job.lock:
-        if job.state not in ("running",):
+        if job.state != "running":
             return {"ok": True, "state": job.state}
 
     job.stop_flag.set()
@@ -437,7 +434,6 @@ def crawl_result(jobId: str):
 
     with job.lock:
         valid_nodes: set[str] = set(job.visited_urls)
-        nodes_set: set[str] = set(valid_nodes)
 
         edge_set: set[tuple[str, str]] = set()
         for (src, dst) in job.edges:
@@ -446,10 +442,8 @@ def crawl_result(jobId: str):
             if src not in valid_nodes or dst not in valid_nodes:
                 continue
             edge_set.add((src, dst))
-            nodes_set.add(src)
-            nodes_set.add(dst)
 
-        nodes: list[str] = sorted(nodes_set)
+        nodes: list[str] = sorted(valid_nodes)
         edges: list[CrawlEdge] = [CrawlEdge(source=s, target=t) for (s, t) in sorted(edge_set)]
 
         outdeg: dict[str, int] = {n: 0 for n in nodes}
