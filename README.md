@@ -1,19 +1,44 @@
 # PageRank Project
 
-Monorepo educativo para rastrear paginas de un mismo dominio, construir un grafo dirigido de enlaces y calcular PageRank desde una interfaz web.
+Aplicacion educativa para rastrear paginas de un mismo dominio, construir un grafo dirigido de enlaces y calcular PageRank desde una interfaz web.
 
 - `backend/`: API FastAPI con crawler HTML, jobs en memoria, canonicalizacion de URLs, endpoints de inicio/estado/stop/resultado y bloqueo de hosts privados/locales.
-- `frontend/`: app Next.js con formulario de crawl, polling de estado, carga del grafo, calculo PageRank en cliente, visualizacion con Cytoscape y export CSV/JSON.
+- `frontend/`: app Next.js con formulario de crawl, polling de estado, carga del grafo, calculo PageRank en cliente, visualizacion con Cytoscape y exportacion CSV/JSON.
 
-## Requisitos locales
+## Requisitos
 
-- Python 3.10+ recomendado. Verificado con Python 3.12.2.
-- Node.js >= 20.9.0, requerido por Next.js 16. Verificado con Node 20.19.5.
-- npm. Verificado con npm 10.8.2.
-- Acceso a internet para que el crawler pueda consultar URLs publicas.
+Antes de clonar el proyecto instala:
 
-El backend bloquea `localhost`, IPs privadas y hosts `.local` por seguridad, asi que el crawler esta pensado para probar sitios publicos.
-La URL inicial por defecto de la UI es `https://www.upb.edu`.
+- Git.
+- Python 3.10 o superior. Este proyecto fue verificado con Python 3.12.2.
+- Node.js 20.9.0 o superior, requerido por Next.js 16. Este proyecto fue verificado con Node 20.19.5.
+- npm. Este proyecto fue verificado con npm 10.8.2.
+- Acceso a internet para que el crawler pueda consultar sitios publicos.
+
+Verifica tus versiones:
+
+```bash
+git --version
+python3 --version
+node --version
+npm --version
+```
+
+En Windows, si `python3` no existe, prueba con `python`.
+
+## Clonar el repositorio
+
+```bash
+git clone <URL_DEL_REPOSITORIO>
+cd PageRank_Project
+```
+
+Si ya tienes el repositorio clonado:
+
+```bash
+cd PageRank_Project
+git pull
+```
 
 ## Estructura
 
@@ -38,9 +63,13 @@ PageRank_Project/
       └─ lib/
 ```
 
-## Instalacion
+## Instalacion desde cero
 
-Desde la raiz del proyecto:
+Haz estos pasos una sola vez despues de clonar.
+
+### 1. Backend
+
+En macOS o Linux:
 
 ```bash
 cd backend
@@ -48,22 +77,39 @@ python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 pip install -r requirements.txt
+cd ..
 ```
 
-En otra terminal, instala el frontend:
+En Windows PowerShell:
+
+```powershell
+cd backend
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+cd ..
+```
+
+### 2. Frontend
+
+Desde la raiz del proyecto:
 
 ```bash
 cd frontend
 npm ci
+cd ..
 ```
 
-Si no quieres usar instalacion reproducible con `package-lock.json`, puedes usar `npm install`.
+`npm ci` usa `package-lock.json` y deja una instalacion reproducible. Si necesitas regenerar dependencias, usa `npm install`.
 
-## Levantar localmente
+## Levantar la aplicacion
 
-Necesitas dos terminales: una para la API y otra para la interfaz.
+Necesitas dos terminales abiertas al mismo tiempo: una para la API y otra para la interfaz.
 
-Terminal 1, backend:
+### Terminal 1: backend
+
+En macOS o Linux:
 
 ```bash
 cd backend
@@ -71,28 +117,52 @@ source .venv/bin/activate
 uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-La API queda disponible en `http://127.0.0.1:8000`.
+En Windows PowerShell:
 
-Terminal 2, frontend:
+```powershell
+cd backend
+.\.venv\Scripts\Activate.ps1
+uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+La API queda disponible en:
+
+```text
+http://127.0.0.1:8000
+```
+
+### Terminal 2: frontend
 
 ```bash
 cd frontend
 npm run dev
 ```
 
-La app queda disponible en `http://localhost:3000`.
+La app queda disponible normalmente en:
 
-Por defecto el frontend llama a `http://localhost:8000`. Si levantas el backend en otro host o puerto, crea `frontend/.env.local`:
+```text
+http://localhost:3000
+```
+
+Si el puerto `3000` esta ocupado, Next.js puede usar `3001` u otro puerto. Usa la URL que aparezca en la terminal.
+
+## Configuracion opcional
+
+Por defecto el frontend llama al backend en `http://localhost:8000`.
+
+Si levantas el backend en otro host o puerto, crea `frontend/.env.local`:
 
 ```bash
 NEXT_PUBLIC_API_BASE=http://localhost:8000
 ```
 
-Luego reinicia `npm run dev`, porque las variables `NEXT_PUBLIC_*` se leen al arrancar Next.js.
+Cambia el valor segun tu caso y reinicia `npm run dev`, porque las variables `NEXT_PUBLIC_*` se leen cuando arranca Next.js.
 
-## Smoke test
+No necesitas crear `.env` para el flujo local normal.
 
-Con ambos servicios levantados, verifica la API:
+## Verificacion rapida
+
+Con backend y frontend levantados, verifica la API:
 
 ```bash
 curl http://127.0.0.1:8000/health
@@ -112,20 +182,31 @@ curl -X POST http://127.0.0.1:8000/api/crawl/start \
   -d '{"startUrl":"https://www.upb.edu","maxPages":5,"maxDepth":1,"ignoreQueryParams":true}'
 ```
 
-La respuesta devuelve un `jobId`. Con ese valor puedes consultar:
+La respuesta devuelve un `jobId`:
+
+```json
+{"jobId":"abc123..."}
+```
+
+Consulta el estado reemplazando `JOB_ID` por ese valor:
 
 ```bash
 curl "http://127.0.0.1:8000/api/crawl/status?jobId=JOB_ID"
+```
+
+Cuando `state` sea `done` o `stopped`, consulta el resultado:
+
+```bash
 curl "http://127.0.0.1:8000/api/crawl/result?jobId=JOB_ID"
 ```
 
 ## Flujo de uso en la UI
 
-1. Abre `http://localhost:3000`.
+1. Abre `http://localhost:3000` o el puerto que indique Next.js.
 2. Ingresa una URL publica. Si omites `http://` o `https://`, la UI asume `https://`.
 3. Ajusta `maxPages` y `maxDepth`.
 4. Presiona `Crawl`.
-5. Espera a que el estado sea `done`, o presiona `Stop` cuando quieras analizar un grafo parcial.
+5. Espera a que el estado sea `done`, o presiona `Stop` si quieres analizar un grafo parcial.
 6. Presiona `Load Graph`. Este boton se habilita con estado `done` o con estado `stopped` si el crawler alcanzo a visitar al menos una pagina.
 7. Presiona `Run PageRank`.
 8. Revisa ranking, detalle de enlaces, visualizacion y exportaciones.
@@ -136,7 +217,7 @@ La UI bloquea `Load Graph` mientras el crawl sigue en ejecucion para evitar leer
 
 - El crawler solo sigue enlaces del mismo dominio exacto que la URL inicial.
 - Ignora `mailto:`, `tel:`, `javascript:` y fragments (`#...`).
-- Ignora query params de forma predeterminada (`ignoreQueryParams=true`) para evitar que URLs de tracking como `?utm_source=...` generen nodos duplicados artificiales.
+- Ignora query params de forma predeterminada (`ignoreQueryParams=true`) para evitar que URLs de tracking como `?utm_source=...` generen nodos duplicados.
 - Resuelve rutas relativas contra la pagina actual.
 - Si el crawl inicia en `https`, fuerza enlaces internos `http` del mismo host a `https`.
 - Limita el recorrido por `maxPages` y `maxDepth`.
@@ -149,8 +230,8 @@ La UI bloquea `Load Graph` mientras el crawl sigue en ejecucion para evitar leer
 - `renderJs=true` existe en el contrato de API, pero todavia no esta soportado; el backend responde error si se envia en `true`.
 - Los jobs viven en memoria. Si reinicias el backend, se pierden los `jobId` y resultados anteriores.
 - Si presionas `Stop`, el backend puede tardar hasta terminar la peticion HTTP actual antes de cambiar a `stopped`.
-- El crawler no sigue sitios locales o privados por el bloqueo de seguridad.
-- En desarrollo, el backend permite CORS desde `localhost`, `127.0.0.1` y `[::1]` en cualquier puerto; esto cubre el cambio automático de Next.js a `3001` cuando `3000` está ocupado.
+- El crawler bloquea `localhost`, IPs privadas y hosts `.local` por seguridad. Esta pensado para sitios publicos.
+- En desarrollo, el backend permite CORS desde `localhost`, `127.0.0.1` y `[::1]` en cualquier puerto. Esto cubre el cambio automatico de Next.js a `3001` cuando `3000` esta ocupado.
 - El modo dev usa Turbopack (`npm run dev`). El build de produccion usa Webpack mediante `next build --webpack`.
 
 ## Endpoints principales
@@ -167,7 +248,7 @@ Backend:
 
 ```bash
 cd backend
-.venv/bin/python -m unittest discover -s tests
+.venv/bin/python -m unittest discover -s tests -q
 ```
 
 Frontend:
@@ -179,12 +260,67 @@ npm run lint
 npm run build
 ```
 
-`npm run build` ejecuta `next build --webpack`.
+`npm run lint` ejecuta TypeScript con `tsc --noEmit`. `npm run build` ejecuta `next build --webpack`.
 
-Checks verificados en este entorno:
+## Problemas frecuentes
 
-- Backend tests: 4 pruebas OK.
-- Frontend tests: 8 pruebas OK.
+### `uvicorn: command not found`
+
+Activa el entorno virtual del backend y vuelve a instalar dependencias:
+
+```bash
+cd backend
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+En Windows usa `.\.venv\Scripts\Activate.ps1`.
+
+### `ModuleNotFoundError: No module named 'httpx'` o `No module named 'fastapi'`
+
+Estas usando otro Python. Ejecuta el backend desde el entorno virtual:
+
+```bash
+cd backend
+source .venv/bin/activate
+python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+### El frontend dice que no puede conectar con la API
+
+Verifica que el backend este corriendo:
+
+```bash
+curl http://127.0.0.1:8000/health
+```
+
+Si cambiaste el puerto del backend, configura `frontend/.env.local` con `NEXT_PUBLIC_API_BASE` y reinicia `npm run dev`.
+
+### El puerto `3000` o `8000` esta ocupado
+
+Para el frontend, usa la URL alternativa que Next.js muestre en la terminal.
+
+Para el backend, puedes cambiar el puerto:
+
+```bash
+uvicorn app.main:app --reload --host 127.0.0.1 --port 8001
+```
+
+Luego configura `frontend/.env.local`:
+
+```bash
+NEXT_PUBLIC_API_BASE=http://localhost:8001
+```
+
+### El crawler rechaza una URL local
+
+Es esperado. Por seguridad, el backend no rastrea `localhost`, IPs privadas ni hosts `.local`. Usa una URL publica como `https://www.upb.edu`.
+
+## Validacion de esta version
+
+Checks ejecutados localmente:
+
+- Backend tests: 6 pruebas OK.
+- Frontend tests: 12 pruebas OK.
 - Frontend lint/typecheck: OK.
 - Frontend build: OK.
-- Smoke test local: `/health`, `/api/crawl/start`, `/api/crawl/status` y `/api/crawl/result` respondieron OK.
