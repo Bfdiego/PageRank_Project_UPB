@@ -29,14 +29,14 @@ En Windows, si `python3` no existe, prueba con `python`.
 ## Clonar el repositorio
 
 ```bash
-git clone <URL_DEL_REPOSITORIO>
-cd PageRank_Project
+git clone https://github.com/Bfdiego/PageRank_Project_UPB.git
+cd PageRank_Project_UPB
 ```
 
 Si ya tienes el repositorio clonado:
 
 ```bash
-cd PageRank_Project
+cd PageRank_Project_UPB
 git pull
 ```
 
