@@ -268,17 +268,41 @@ npm run build
 
 Activa el entorno virtual del backend y vuelve a instalar dependencias:
 
+macOS o Linux:
+
 ```bash
 cd backend
 source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-En Windows usa `.\.venv\Scripts\Activate.ps1`.
+Windows PowerShell:
+
+```powershell
+cd backend
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+```
+
+Si Windows sigue sin reconocer `uvicorn`, ejecutalo como modulo de Python:
+
+```powershell
+python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+Si PowerShell no permite activar el entorno virtual, ejecuta una vez:
+
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+```
+
+Luego cierra PowerShell, abre una terminal nueva y vuelve a activar `.venv`.
 
 ### `ModuleNotFoundError: No module named 'httpx'` o `No module named 'fastapi'`
 
 Estas usando otro Python. Ejecuta el backend desde el entorno virtual:
+
+macOS o Linux:
 
 ```bash
 cd backend
@@ -286,13 +310,37 @@ source .venv/bin/activate
 python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
+Windows PowerShell:
+
+```powershell
+cd backend
+.\.venv\Scripts\Activate.ps1
+python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+Tambien puedes ejecutarlo sin activar el entorno:
+
+```powershell
+.\.venv\Scripts\python.exe -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+```
+
 ### El frontend dice que no puede conectar con la API
 
 Verifica que el backend este corriendo:
 
+macOS o Linux:
+
 ```bash
 curl http://127.0.0.1:8000/health
 ```
+
+Windows PowerShell:
+
+```powershell
+curl.exe http://127.0.0.1:8000/health
+```
+
+Tambien puedes abrir `http://127.0.0.1:8000/health` directamente en el navegador. Debe mostrar `{"ok":true}`.
 
 Si cambiaste el puerto del backend, configura `frontend/.env.local` con `NEXT_PUBLIC_API_BASE` y reinicia `npm run dev`.
 
@@ -302,8 +350,16 @@ Para el frontend, usa la URL alternativa que Next.js muestre en la terminal.
 
 Para el backend, puedes cambiar el puerto:
 
+macOS o Linux:
+
 ```bash
 uvicorn app.main:app --reload --host 127.0.0.1 --port 8001
+```
+
+Windows PowerShell:
+
+```powershell
+python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8001
 ```
 
 Luego configura `frontend/.env.local`:
